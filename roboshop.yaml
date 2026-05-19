@@ -8,6 +8,7 @@
     instances: #List of the instances
       - mongodb
       - catalogue
+    domain_name: kesavatarun.in
   tasks:
     - name: Create EC2 instance
       amazon.aws.ec2_instance:
@@ -26,3 +27,14 @@
     - name: Print the Output
       ansible.builtin.debug:
         msg: "{{ ec2_output }}"
+
+    - name: Creation of route53 records
+      amazon.aws.route53:
+        state: present
+        zone: "{{ domain_name }}"
+        record: "{{ item.item }}-{{ env }}.{{ domain_name }}"
+        type: A
+        ttl: 1
+        value: "{{ item.instances[0].private_ip_address }}"
+        wait: true
+      loop: "{{ ec2_output.results }}"
