@@ -5,12 +5,13 @@
     sg_id: sg-0075bb69cff1075c4 #Should change everytime when ever new instance created
     ami_id: ami-0220d79f3f480ecf5 #Should change everytime when ever new instance created
     env: dev #Should change accoringly; During development use dev, In production use qa and the environment variables
-    #action: create #If you want to delete override it as delete.
+    action: create #If you want to delete override it as delete.
     instances: #List of the instances
       - mongodb
       - catalogue
     domain_name: kesavatarun.in
   tasks:
+    ###Create###
     - name: Create EC2 instance
       amazon.aws.ec2_instance:
         instance_type: t3.micro
@@ -24,12 +25,12 @@
           Name: "{{ item }}-{{ env }}"
       loop: "{{ instances }}"
       register: ec2_output
-     # when: action == "create"
+      when: action == "create"
 
     - name: Print the Output
       ansible.builtin.debug:
         msg: "{{ ec2_output }}"
-        #when: action == "create"
+        when: action == "create"
 
     - name: Creation of route53 records
       amazon.aws.route53:
@@ -39,10 +40,11 @@
         type: A
         ttl: 1
         value: "{{ item.instances[0].private_ip_address }}"
-        wait: true
+        wait: false
+        overwrite: true
       loop: "{{ ec2_output.results }}"
 
-    - name: Creation of route53 records
+    - name: Creation of route53 records for frontend
       amazon.aws.route53:
         state: present
         zone: "{{ domain_name }}"
@@ -50,14 +52,28 @@
         type: A
         ttl: 1
         value: "{{ item.instances[0].public_ip_address }}"
-        wait: true
+        wait: false
+        overwrite: true
       loop: "{{ ec2_output.results }}"
       when:
         - item.item == "frontend"
-        # - action == "create"
+        - action == "create"
 
-    # - name: Delete ec2 instance
-    #   amazon.aws.ec2_instance:
-    #     state: absent
-    #     name: "{{ item }}-{{ env }}"
-    #   loop: "{{ instances }}"
+    ###Delete###
+    - name: Delete Route53 records
+      amazon.aws.route53:
+        state: absent
+        zone: "{{ domain_name }}"
+        record: "roboshop-{{ env }}.{{ domain_name }}" #roboshop-dev.kesavatarun.in
+        type: A
+        ttl: 1
+      loop: "{{ instances }}"
+      when: action == "destroy"
+
+    - name: Delete ec2 instance
+      amazon.aws.ec2_instance:
+        state: absent
+        name: "{{ item }}-{{ env }}"
+        wait: false
+      loop: "{{ instances }}"
+      when: action == "destroy"
