@@ -30,7 +30,7 @@
     - name: Print the Output
       ansible.builtin.debug:
         msg: "{{ ec2_output }}"
-        when: action == "create"
+      when: action == "create"
 
     - name: Creation of route53 records
       amazon.aws.route53:
@@ -43,6 +43,7 @@
         wait: false
         overwrite: true
       loop: "{{ ec2_output.results }}"
+      when: action == "create"
 
     - name: Creation of route53 records for frontend
       amazon.aws.route53:
