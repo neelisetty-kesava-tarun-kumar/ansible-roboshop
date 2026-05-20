@@ -1,5 +1,5 @@
 - name: Catalogue Configuration
-  hosts: all
+  hosts: catalogue
   #connection: local
   become: yes
   tasks:
