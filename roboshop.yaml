@@ -5,6 +5,7 @@
     sg_id: sg-0075bb69cff1075c4 #Should change everytime when ever new instance created
     ami_id: ami-0220d79f3f480ecf5 #Should change everytime when ever new instance created
     env: dev #Should change accoringly; During development use dev, In production use qa and the environment variables
+    #action: create #If you want to delete override it as delete.
     instances: #List of the instances
       - mongodb
       - catalogue
@@ -23,10 +24,12 @@
           Name: "{{ item }}-{{ env }}"
       loop: "{{ instances }}"
       register: ec2_output
+     # when: action == "create"
 
     - name: Print the Output
       ansible.builtin.debug:
         msg: "{{ ec2_output }}"
+        #when: action == "create"
 
     - name: Creation of route53 records
       amazon.aws.route53:
@@ -49,4 +52,12 @@
         value: "{{ item.instances[0].public_ip_address }}"
         wait: true
       loop: "{{ ec2_output.results }}"
-      when: item.item == "frontend"
+      when:
+        - item.item == "frontend"
+        # - action == "create"
+
+    # - name: Delete ec2 instance
+    #   amazon.aws.ec2_instance:
+    #     state: absent
+    #     name: "{{ item }}-{{ env }}"
+    #   loop: "{{ instances }}"
