@@ -1,10 +1,11 @@
+#ansible-playbook -i localhost, -e instances=['mongodb','catalogue','redis','user','cart','mysql','shipping','rabbitmq','payment','frontend'] roboshop.yaml
 - name: Create EC2 and R53 records with public IP address
   hosts: all #If not using inventory file we need to change host local to host all
   connection: local
   vars:
-    sg_id: sg-0075bb69cff1075c4 #Should change everytime when ever new instance created
-    ami_id: ami-0220d79f3f480ecf5 #Should change everytime when ever new instance created
-    env: dev #Should change accoringly; During development use dev, In production use qa and the environment variables
+    sg_id: sg-0075bb69cff1075c4 #Should change everytime when ever new instance created.
+    ami_id: ami-0220d79f3f480ecf5 #Should change everytime when ever new instance created.
+    env: dev #Should change accoringly; During development use dev, In production use qa and the environment variables.
     action: create #If you want to delete override it as delete.
     instances: #List of the instances
       - mongodb
@@ -60,7 +61,7 @@
         - item.item == "frontend"
         - action == "create"
 
-    ###Delete###
+    ### Delete / Destory ###
     - name: Delete Route53 records
       amazon.aws.route53:
         state: absent
