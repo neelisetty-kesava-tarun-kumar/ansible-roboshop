@@ -1,4 +1,4 @@
-# ansible-playbook -i localhost, -e '[instances: ["mongodb","catalogue","redis","user","cart","mysql","shipping","rabbitmq","payment","frontend"]' roboshop.yaml
+# ansible-playbook -i localhost, -e '{"instances":["mongodb","catalogue","redis","user","cart","mysql","shipping","rabbitmq","payment","frontend"]}' roboshop.yaml
 - name: Create EC2 and R53 records with public IP address
   hosts: all #If not using inventory file we need to change host local to host all
   connection: local
