@@ -64,4 +64,4 @@
 
     - name: Load the products
       ansible.builtin.shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js &>> $LOGS_FILE
-      when: catalogue_output.stdout < 0
+      when: catalogue_output.stdout | int < 0
