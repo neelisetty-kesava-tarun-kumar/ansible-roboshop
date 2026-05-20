@@ -28,19 +28,19 @@
         path: /app
         state: directory
 
-    - name: Delete catalogue zip file
+    - name: Delete user zip file
       ansible.builtin.file:
-        path: /tmp/catalogue.zip
+        path: /tmp/user.zip
         state: absent
 
-    - name: Downloading the catalogue application
+    - name: Downloading the user application
       ansible.builtin.get_url:
-        url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip
-        dest: /tmp/catalogue.zip
+        url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip
+        dest: /tmp/user.zip
 
-    - name: Unzip the catalogue file
+    - name: Unzip the user file
       ansible.builtin.unarchive:
-        src: /tmp/catalogue.zip
+        src: /tmp/user.zip
         dest: /app
         remote_src: yes
 
@@ -48,35 +48,13 @@
       community.general.npm:
         path: /app
 
-    - name: Copy catalogue service file
+    - name: Copy user service file
       ansible.builtin.copy:
-        src: catalogue.service
-        dest: /etc/systemd/system/catalogue.service
+        src: user.service
+        dest: /etc/systemd/system/user.service
 
-    - name: Copy mongo repo
-      ansible.builtin.copy:
-        src: mongo.repo
-        dest: /etc/yum.repos.d/mongo.repo
-
-    - name: Install mongodb client
-      ansible.builtin.dnf:
-        name: mongodb-mongosh
-        state: present
-
-    - name: Check products loaded or not
-      ansible.builtin.command: mongosh --host "{{ MONGODB_HOST }}" --quiet --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
-      register: catalogue_output
-
-    - name: print the catalogue output
-      ansible.builtin.debug:
-        msg: "{{ catalogue_output }}"
-
-    - name: Load the products
-      ansible.builtin.shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js
-      when: catalogue_output.stdout | int < 0
-
-    - name: Start the catalogue
+    - name: Start the user
       ansible.builtin.service:
-        name: catalogue
+        name: user
         state: restarted
         enabled: yes
