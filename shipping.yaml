@@ -65,7 +65,7 @@
 
     - name: Install MySQL dependency
       ansible.builtin.dnf:
-        name: python3-PyMySQL
+        name: PyMySQL
         state: present
 
     - name: Import Shipping data
