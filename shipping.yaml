@@ -45,7 +45,7 @@
         remote_src: yes
 
     - name: To Install dependencies
-      ansible.builtin.command: mvn cllean package
+      ansible.builtin.command: mvn clean package
       args:
         chdir: /app
 
@@ -56,7 +56,7 @@
 
     - name: Create systemctl service
       ansible.builtin.template:
-        src: shippin.src
+        src: shipping.src
         dest: /etc/systemd/system/shipping.service
 
     - name: Demon reload

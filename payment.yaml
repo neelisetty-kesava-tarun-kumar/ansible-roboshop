@@ -1,0 +1,5 @@
+- name: Configure Payment server
+  hosts: payment
+  become: yes
+  tasks:
+  - name: 
