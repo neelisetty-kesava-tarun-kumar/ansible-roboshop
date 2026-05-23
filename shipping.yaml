@@ -65,8 +65,11 @@
 
     - name: Install MySQL dependency
       ansible.builtin.dnf:
-        name: PyMySQL
+        name: "{{ item }}"
         state: present
+      loop:
+        - PyMySQL
+        - cryptography
 
     - name: Import Shipping data
       community.mysql.mysql_db:
