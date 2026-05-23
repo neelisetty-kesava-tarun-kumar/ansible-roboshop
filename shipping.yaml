@@ -63,10 +63,13 @@
       ansible.builtin.systemd_service:
         daemon_reload: true
 
-    - name: Install pip
-      ansible.builtin.dnf:
-        name: python3-pip
-        state: present
+    - name: install dependencie
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        executable: pip3.9
+      loop:
+        - cryptography
+        - PyMySQL
 
     - name: Import Shipping data
       community.mysql.mysql_db:
