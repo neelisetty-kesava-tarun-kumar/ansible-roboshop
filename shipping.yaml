@@ -2,10 +2,13 @@
   hosts: shipping
   become: yes
   tasks:
-    - name: Install Maven
+    - name: Install Maven and MySQL
       ansible.builtin.dnf:
-        name: maven
+        name: "{{ item }}"
         state: present
+      loop:
+        - maven
+        - mysql
 
     - name: Create system user roboshop
       ansible.builtin.user:
@@ -41,5 +44,40 @@
         dest: /app
         remote_src: yes
 
-    - name: Install dependencies
+    - name: To Install dependencies
       ansible.builtin.command: mvn cllean package
+      args:
+        chdir: /app
+
+    - name: Install dependencies
+      ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
+      args:
+        chdir: /app
+
+    - name: Create systemctl service
+      ansible.builtin.template:
+        src: shippin.src
+        dest: /etc/systemd/system/shipping.service
+
+    - name: Demon reload
+      ansible.builtin.systemd_service:
+        demon_reload: true
+
+    - name: Import Shipping data
+      community.mysql.mysql_db:
+        state: import
+        name: all
+        login_host: "{{ MySQL_HOST }}"
+        login_user: root
+        login_password: RoboShop@1
+        target: "{{ item }}"
+      loop:
+        - /app/db/schema.sql
+        - /app/db/app-user.sql
+        - /app/db/master-data.sql
+
+    - name: Start and Enable Shipping
+      ansible.builtin.service:
+        name: shipping
+        state: restarted
+        enable: yes
