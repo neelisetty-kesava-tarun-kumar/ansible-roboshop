@@ -63,6 +63,11 @@
       ansible.builtin.systemd_service:
         daemon_reload: true
 
+    - name: Install MySQL dependency
+      ansible.builtin.dnf:
+        name: python3-PyMySQL
+        state: present
+
     - name: Import Shipping data
       community.mysql.mysql_db:
         state: import
