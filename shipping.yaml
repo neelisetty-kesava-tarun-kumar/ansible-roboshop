@@ -1,0 +1,45 @@
+- name: Configure Shipping server
+  hosts: shipping
+  become: yes
+  tasks:
+    - name: Install Maven
+      ansible.builtin.dnf:
+        name: maven
+        state: present
+
+    - name: Create system user roboshop
+      ansible.builtin.user:
+        name: roboshop
+        system: true
+        home: /app
+        shell: /sbin/nologin
+        comment: "roboshop system user"
+
+    - name: Delete app directory
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: Create a new directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: Delete shipping zip file
+      ansible.builtin.file:
+        path: /tmp/shipping.zip
+        state: absent
+
+    - name: Downloading the shipping application
+      ansible.builtin.get_url:
+        url: https://roboshop-artifacts.s3.amazonaws.com/shipping-v3.zip
+        dest: /tmp/shipping.zip
+
+    - name: Unzip the shipping file
+      ansible.builtin.unarchive:
+        src: /tmp/shipping.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Install dependencies
+      ansible.builtin.command: mvn cllean package
