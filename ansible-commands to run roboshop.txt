@@ -1,0 +1,29 @@
+To create the aws instances and records:-
+=========================================
+ansible-playbook -i localhost, -e '{"instances":["mongodb","catalogue","redis","user","cart","mysql","shipping","rabbitmq","payment","frontend"]}' roboshop.yaml
+
+To destory the aws instances and records:-
+==========================================
+ansible-playbook -i localhost, -e '{"instances":["mongodb","catalogue","redis","user","cart","mysql","shipping","rabbitmq","payment","frontend"]}' -e action=destroy roboshop.yaml
+
+To run each and every file module:-
+===================================
+ansible-playbook -i inventory.ini mongodb.yaml && \
+ansible-playbook -i inventory.ini catalogue.yaml && \
+ansible-playbook -i inventory.ini redis.yaml && \
+ansible-playbook -i inventory.ini user.yaml && \
+ansible-playbook -i inventory.ini cart.yaml && \
+ansible-playbook -i inventory.ini mysql.yaml && \
+ansible-playbook -i inventory.ini shipping.yaml && \
+ansible-playbook -i inventory.ini rabbitmq.yaml && \
+ansible-playbook -i inventory.ini payment.yaml && \
+ansible-playbook -i inventory.ini frontend.yaml
+
+To check wheather all the files are running:-
+=============================================
+curl http://catalogue-dev.kesavatarun.in:8080/health
+curl http://user-dev.kesavatarun.in:8080/health
+curl http://cart-dev.kesavatarun.in:8080/health
+curl http://shipping-dev.kesavatarun.in:8080/health
+curl http://payment-dev.kesavatarun.in:8080/health
+curl http://frontend-dev.kesavatarun.in
