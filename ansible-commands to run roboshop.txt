@@ -1,3 +1,6 @@
+Configure AWS Credenials.
+Clone the git repo, then run the command to create to instances and records.
+
 To create the aws instances and records:-
 =========================================
 ansible-playbook -i localhost, -e '{"instances":["mongodb","catalogue","redis","user","cart","mysql","shipping","rabbitmq","payment","frontend"]}' roboshop.yaml
@@ -27,3 +30,4 @@ curl http://cart-dev.kesavatarun.in:8080/health
 curl http://shipping-dev.kesavatarun.in:8080/health
 curl http://payment-dev.kesavatarun.in:8080/health
 curl http://frontend-dev.kesavatarun.in
+
